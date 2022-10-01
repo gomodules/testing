@@ -37,36 +37,40 @@ func ReadFile(filename string) ([]byte, error) {
 	return os.ReadFile(filepath.Join(rootDir, filename))
 }
 
-func LoadFile(filename string) (map[string]interface{}, error) {
+func LoadFile(filename string) (map[string]any, error) {
 	data, err := os.ReadFile(filepath.Join(rootDir, filename))
 	if err != nil {
 		return nil, err
 	}
 
-	var obj map[string]interface{}
+	var obj map[string]any
 	err = yaml.Unmarshal(data, &obj)
 	return obj, err
 }
 
-func CheckDiff(oldObj, newObj interface{}) error {
+func Diff(oldObj, newObj any) error {
 	old, err := json.Marshal(oldObj)
 	if err != nil {
 		return err
 	}
 
-	new, err := json.Marshal(newObj)
+	nu, err := json.Marshal(newObj)
 	if err != nil {
 		return err
 	}
 
+	return DiffJSON(old, nu)
+}
+
+func DiffJSON(old, nu []byte) error {
 	differ := diff.New()
-	d, err := differ.Compare(old, new)
+	d, err := differ.Compare(old, nu)
 	if err != nil {
 		return err
 	}
 
 	if d.Modified() {
-		var original map[string]interface{}
+		var original map[string]any
 		err := yaml.Unmarshal(old, &original)
 		if err != nil {
 			return err
@@ -85,4 +89,26 @@ func CheckDiff(oldObj, newObj interface{}) error {
 		return errors.New(result)
 	}
 	return nil
+}
+
+func RoundTripFile(filename string, v any) error {
+	data, err := ReadFile(filename)
+	if err != nil {
+		return err
+	}
+	old, err := yaml.ToJSON(data)
+	if err != nil {
+		return err
+	}
+
+	err = yaml.Unmarshal(data, &v)
+	if err != nil {
+		return err
+	}
+	nu, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	return DiffJSON(old, nu)
 }
