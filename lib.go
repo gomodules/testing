@@ -18,8 +18,10 @@ package testing
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
+	"reflect"
 	"runtime"
 
 	"github.com/pkg/errors"
@@ -92,6 +94,10 @@ func DiffJSON(old, nu []byte) error {
 }
 
 func RoundTripFile(filename string, v any) error {
+	if reflect.TypeOf(v).Kind() != reflect.Pointer {
+		return fmt.Errorf("v is expected to be a pointer, found %T", v)
+	}
+
 	data, err := ReadFile(filename)
 	if err != nil {
 		return err
@@ -101,7 +107,7 @@ func RoundTripFile(filename string, v any) error {
 		return err
 	}
 
-	err = yaml.Unmarshal(data, &v)
+	err = yaml.Unmarshal(data, v)
 	if err != nil {
 		return err
 	}
