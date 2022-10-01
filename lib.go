@@ -25,7 +25,7 @@ import (
 	"github.com/pkg/errors"
 	diff "github.com/yudai/gojsondiff"
 	"github.com/yudai/gojsondiff/formatter"
-	"sigs.k8s.io/yaml"
+	"gomodules.xyz/encoding/yaml"
 )
 
 var rootDir = func() string {
@@ -35,6 +35,17 @@ var rootDir = func() string {
 
 func ReadFile(filename string) ([]byte, error) {
 	return os.ReadFile(filepath.Join(rootDir, filename))
+}
+
+func LoadFile(filename string) (map[string]interface{}, error) {
+	data, err := os.ReadFile(filepath.Join(rootDir, filename))
+	if err != nil {
+		return nil, err
+	}
+
+	var obj map[string]interface{}
+	err = yaml.Unmarshal(data, &obj)
+	return obj, err
 }
 
 func CheckDiff(oldObj, newObj interface{}) error {
