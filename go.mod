@@ -1,6 +1,6 @@
 module gomodules.xyz/testing
 
-go 1.18
+go 1.25.0
 
 require (
 	github.com/pkg/errors v0.9.1
@@ -18,8 +18,8 @@ require (
 	github.com/sergi/go-diff v1.2.0 // indirect
 	github.com/yudai/golcs v0.0.0-20170316035057-ecda9a501e82 // indirect
 	github.com/yudai/pp v2.0.1+incompatible // indirect
-	golang.org/x/net v0.7.0 // indirect
-	golang.org/x/sys v0.5.0 // indirect
+	golang.org/x/net v0.55.0 // indirect
+	golang.org/x/sys v0.45.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )
